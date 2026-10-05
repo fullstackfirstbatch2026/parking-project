@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>ParkEase - Parking Management System</title>
+
+    <link rel="stylesheet"
+          href="dashboard.css">
+
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar">
+
+        <div class="logo">
+
+            <div class="logo-icon">
+                P
+            </div>
+
+            <div>
+                <h2>ParkEase</h2>
+                <span>Management System</span>
+            </div>
+
+        </div>
+
+
+        <nav>
+
+            <a href="#dashboard"
+               class="nav-item active">
+
+                <span>▦</span>
+                Dashboard
+
+            </a>
+
+            <a href="#customers"
+               class="nav-item">
+
+                <span>👥</span>
+                Customers
+
+            </a>
+
+            <a href="#vehicles"
+               class="nav-item">
+
+                <span>🚗</span>
+                Vehicles
+
+            </a>
+
+            <a href="#slots"
+               class="nav-item">
+
+                <span>🅿</span>
+                Parking Slots
+
+            </a>
+
+            <a href="#transactions"
+               class="nav-item">
+
+                <span>▤</span>
+                Transactions
+
+            </a>
+
+        </nav>
+
+
+        <div class="sidebar-bottom">
+
+            <div class="system-status">
+
+                <span class="status-dot"></span>
+
+                <div>
+
+                    <strong>System Online</strong>
+
+                    <small>
+                        Server: localhost:8082
+                    </small>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+
+
+    <!-- MAIN CONTENT -->
+
+    <main class="main">
+
+        <!-- TOP BAR -->
+
+        <header class="topbar">
+
+            <div>
+
+                <h1>Dashboard</h1>
+
+                <p>
+                    Welcome to your parking management system
+                </p>
+
+            </div>
+
+
+            <div class="top-actions">
+
+                <button class="refresh-btn"
+                        onclick="refreshDashboard()">
+
+                    ↻ Refresh
+
+                </button>
+
+                <div class="admin">
+
+                    <div class="admin-avatar">
+                        A
+                    </div>
+
+                    <div>
+
+                        <strong>Administrator</strong>
+
+                        <small>Admin</small>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+
+        <!-- DASHBOARD -->
+
+        <section id="dashboard"
+                 class="page-section">
+
+
+            <!-- STATISTICS -->
+
+            <div class="stats-grid">
+
+
+                <div class="stat-card">
+
+                    <div class="stat-icon blue">
+                        👥
+                    </div>
+
+                    <div>
+
+                        <p>Total Customers</p>
+
+                        <h2 id="customerCount">
+                            0
+                        </h2>
+
+                        <span class="stat-label">
+                            Registered customers
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="stat-card">
+
+                    <div class="stat-icon purple">
+                        🚗
+                    </div>
+
+                    <div>
+
+                        <p>Total Vehicles</p>
+
+                        <h2 id="vehicleCount">
+                            0
+                        </h2>
+
+                        <span class="stat-label">
+                            Registered vehicles
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="stat-card">
+
+                    <div class="stat-icon green">
+                        🅿
+                    </div>
+
+                    <div>
+
+                        <p>Available Slots</p>
+
+                        <h2 id="availableSlotCount">
+                            0
+                        </h2>
+
+                        <span class="stat-label">
+                            Ready for parking
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="stat-card">
+
+                    <div class="stat-icon orange">
+                        ₹
+                    </div>
+
+                    <div>
+
+                        <p>Total Revenue</p>
+
+                        <h2>
+                            ₹<span id="totalRevenue">0</span>
+                        </h2>
+
+                        <span class="stat-label">
+                            Parking revenue
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- MIDDLE SECTION -->
+
+            <div class="dashboard-grid">
+
+
+                <!-- SLOT OVERVIEW -->
+
+                <div class="panel">
+
+                    <div class="panel-header">
+
+                        <div>
+
+                            <h2>Parking Overview</h2>
+
+                            <p>
+                                Current parking slot status
+                            </p>
+
+                        </div>
+
+                        <span class="live-badge">
+                            ● LIVE
+                        </span>
+
+                    </div>
+
+
+                    <div class="parking-overview">
+
+                        <div class="circle-container">
+
+                            <div class="parking-circle">
+
+                                <strong id="occupiedPercentage">
+                                    0%
+                                </strong>
+
+                                <span>
+                                    Occupied
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="overview-details">
+
+                            <div class="overview-row">
+
+                                <span>
+                                    <i class="legend available-legend"></i>
+                                    Available
+                                </span>
+
+                                <strong id="overviewAvailable">
+                                    0
+                                </strong>
+
+                            </div>
+
+
+                            <div class="overview-row">
+
+                                <span>
+                                    <i class="legend occupied-legend"></i>
+                                    Occupied
+                                </span>
+
+                                <strong id="overviewOccupied">
+                                    0
+                                </strong>
+
+                            </div>
+
+
+                            <div class="overview-row">
+
+                                <span>
+                                    <i class="legend total-legend"></i>
+                                    Total Slots
+                                </span>
+
+                                <strong id="slotCount">
+                                    0
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- QUICK ALLOCATION -->
+
+                <div class="panel">
+
+                    <div class="panel-header">
+
+                        <div>
+
+                            <h2>Quick Parking</h2>
+
+                            <p>
+                                Allocate a parking slot
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="quick-form">
+
+                        <label>
+                            Vehicle ID
+                        </label>
+
+                        <input
+                                type="number"
+                                id="allocateVehicleId"
+                                placeholder="Enter vehicle ID">
+
+
+                        <button
+                                class="primary-btn"
+                                onclick="allocateParking()">
+
+                            Allocate Parking
+
+                        </button>
+
+
+                        <p id="allocationMessage"
+                           class="allocation-message">
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- SLOT STATUS -->
+
+            <div class="panel">
+
+                <div class="panel-header">
+
+                    <div>
+
+                        <h2>Parking Slots</h2>
+
+                        <p>
+                            Monitor all parking spaces
+                        </p>
+
+                    </div>
+
+                    <button
+                            class="outline-btn"
+                            onclick="loadSlots()">
+
+                        Refresh
+
+                    </button>
+
+                </div>
+
+
+                <div id="slotCards"
+                     class="slot-grid">
+
+                </div>
+
+            </div>
+
+
+
+            <!-- RECENT TRANSACTIONS -->
+
+            <div class="panel">
+
+                <div class="panel-header">
+
+                    <div>
+
+                        <h2>Recent Transactions</h2>
+
+                        <p>
+                            Latest parking activities
+                        </p>
+
+                    </div>
+
+                    <button
+                            class="outline-btn"
+                            onclick="loadTransactions()">
+
+                        Refresh
+
+                    </button>
+
+                </div>
+
+
+                <div class="table-wrapper">
+
+                    <table>
+
+                        <thead>
+
+                        <tr>
+
+                            <th>ID</th>
+
+                            <th>Vehicle</th>
+
+                            <th>Type</th>
+
+                            <th>Slot</th>
+
+                            <th>Entry Time</th>
+
+                            <th>Exit Time</th>
+
+                            <th>Fee</th>
+
+                            <th>Status</th>
+
+                        </tr>
+
+                        </thead>
+
+
+                        <tbody id="transactionTable">
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- CUSTOMER SECTION -->
+
+        <section id="customers"
+                 class="page-section hidden-section">
+
+            <div class="section-title">
+
+                <h1>Customer Management</h1>
+
+                <p>
+                    Manage registered customers
+                </p>
+
+            </div>
+
+
+            <div class="panel">
+
+                <div class="form-grid">
+
+                    <input
+                            type="text"
+                            id="customerName"
+                            placeholder="Customer Name">
+
+                    <input
+                            type="text"
+                            id="customerPhone"
+                            placeholder="Phone Number">
+
+                    <input
+                            type="email"
+                            id="customerEmail"
+                            placeholder="Email Address">
+
+                    <button
+                            class="primary-btn"
+                            onclick="addCustomer()">
+
+                        Add Customer
+
+                    </button>
+
+                </div>
+
+
+                <div class="table-wrapper">
+
+                    <table>
+
+                        <thead>
+
+                        <tr>
+
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Phone</th>
+                            <th>Email</th>
+                            <th>Action</th>
+
+                        </tr>
+
+                        </thead>
+
+                        <tbody id="customerTable">
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- VEHICLE SECTION -->
+
+        <section id="vehicles"
+                 class="page-section hidden-section">
+
+            <div class="section-title">
+
+                <h1>Vehicle Management</h1>
+
+                <p>
+                    Manage registered vehicles
+                </p>
+
+            </div>
+
+
+            <div class="panel">
+
+                <div class="form-grid">
+
+                    <input
+                            type="text"
+                            id="vehicleNumber"
+                            placeholder="Vehicle Number">
+
+
+                    <select id="vehicleType">
+
+                        <option value="Car">
+                            Car
+                        </option>
+
+                        <option value="Bike">
+                            Bike
+                        </option>
+
+                        <option value="Van">
+                            Van
+                        </option>
+
+                        <option value="Truck">
+                            Truck
+                        </option>
+
+                    </select>
+
+
+                    <input
+                            type="number"
+                            id="vehicleCustomerId"
+                            placeholder="Customer ID">
+
+
+                    <button
+                            class="primary-btn"
+                            onclick="addVehicle()">
+
+                        Add Vehicle
+
+                    </button>
+
+                </div>
+
+
+                <div class="table-wrapper">
+
+                    <table>
+
+                        <thead>
+
+                        <tr>
+
+                            <th>ID</th>
+                            <th>Vehicle Number</th>
+                            <th>Type</th>
+                            <th>Customer</th>
+                            <th>Action</th>
+
+                        </tr>
+
+                        </thead>
+
+                        <tbody id="vehicleTable">
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- SLOT SECTION -->
+
+        <section id="slots"
+                 class="page-section hidden-section">
+
+            <div class="section-title">
+
+                <h1>Parking Slots</h1>
+
+                <p>
+                    Manage parking spaces
+                </p>
+
+            </div>
+
+
+            <div class="panel">
+
+                <div class="form-grid">
+
+                    <input
+                            type="text"
+                            id="slotNumber"
+                            placeholder="Slot Number">
+
+
+                    <select id="slotType">
+
+                        <option value="Car">
+                            Car
+                        </option>
+
+                        <option value="Bike">
+                            Bike
+                        </option>
+
+                        <option value="Van">
+                            Van
+                        </option>
+
+                        <option value="Truck">
+                            Truck
+                        </option>
+
+                    </select>
+
+
+                    <button
+                            class="primary-btn"
+                            onclick="addSlot()">
+
+                        Add Slot
+
+                    </button>
+
+                </div>
+
+
+                <div class="table-wrapper">
+
+                    <table>
+
+                        <thead>
+
+                        <tr>
+
+                            <th>ID</th>
+                            <th>Slot Number</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>Action</th>
+
+                        </tr>
+
+                        </thead>
+
+                        <tbody id="slotTable">
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- TRANSACTION SECTION -->
+
+        <section id="transactions"
+                 class="page-section hidden-section">
+
+            <div class="section-title">
+
+                <h1>Parking Transactions</h1>
+
+                <p>
+                    View and manage parking transactions
+                </p>
+
+            </div>
+
+
+            <div class="panel">
+
+                <div class="table-wrapper">
+
+                    <table>
+
+                        <thead>
+
+                        <tr>
+
+                            <th>ID</th>
+                            <th>Vehicle</th>
+                            <th>Type</th>
+                            <th>Slot</th>
+                            <th>Entry</th>
+                            <th>Exit</th>
+                            <th>Fee</th>
+                            <th>Action</th>
+
+                        </tr>
+
+                        </thead>
+
+                        <tbody id="fullTransactionTable">
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+    </main>
+
+</div>
+
+
+<script src="parkingjsp.js"></script>
+
+</body>
+
+</html>
