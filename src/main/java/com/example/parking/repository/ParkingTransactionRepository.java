@@ -9,11 +9,19 @@ import java.util.List;
 public interface ParkingTransactionRepository
         extends JpaRepository<ParkingTransaction, Long> {
 
+    // JOIN: Get parking transactions with vehicle and slot details
     @Query("""
-            SELECT pt
-            FROM ParkingTransaction pt
-            JOIN FETCH pt.vehicle v
-            JOIN FETCH pt.slot s
-            """)
+        SELECT p
+        FROM ParkingTransaction p
+        JOIN FETCH p.vehicle v
+        JOIN FETCH p.slot s
+        """)
     List<ParkingTransaction> findTransactionsWithVehicleAndSlot();
+
+    // Calculate total revenue
+    @Query("""
+        SELECT COALESCE(SUM(p.fee), 0)
+        FROM ParkingTransaction p
+        """)
+    Double getTotalRevenue();
 }

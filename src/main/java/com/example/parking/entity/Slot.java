@@ -10,17 +10,17 @@ public class Slot {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "slot_number")
     private String slotNumber;
 
-    @Column(name = "slot_type")
     private String slotType;
 
-    @Column(name = "available")
-    private Boolean available = true;
+    private Boolean available;
 
+    // Default constructor
     public Slot() {
     }
+
+    // Getters and Setters
 
     public Long getId() {
         return id;

@@ -29,35 +29,61 @@ public class ParkingService {
         this.slotRepository = slotRepository;
     }
 
+    // ==========================================
+    // ALLOCATE PARKING SLOT
+    // ==========================================
+
     public ParkingTransaction allocateSlot(Long vehicleId) {
 
+        // Find vehicle
         Vehicle vehicle = vehicleRepository
                 .findById(vehicleId)
                 .orElseThrow(() ->
                         new RuntimeException(
-                                "Vehicle not found with ID: " + vehicleId));
+                                "Vehicle not found with ID: " + vehicleId
+                        ));
 
+        // Find available slot matching vehicle type
         Slot slot = slotRepository
-                .findFirstByAvailableTrue()
+                .findFirstByAvailableTrueAndSlotTypeIgnoreCase(
+                        vehicle.getVehicleType()
+                )
                 .orElseThrow(() ->
                         new RuntimeException(
-                                "No parking slot available"));
+                                "No available "
+                                        + vehicle.getVehicleType()
+                                        + " slot found"
+                        ));
 
+        // Mark slot as occupied
         slot.setAvailable(false);
-
         slotRepository.save(slot);
 
+        // Create parking transaction
         ParkingTransaction transaction =
                 new ParkingTransaction();
 
         transaction.setVehicle(vehicle);
         transaction.setSlot(slot);
-        transaction.setEntryTime(LocalDateTime.now());
+
+        // Entry time
+        transaction.setEntryTime(
+                LocalDateTime.now()
+        );
+
+        // Vehicle has not exited yet
         transaction.setExitTime(null);
+
+        // Initial fee
         transaction.setFee(0.0);
 
+        // Save transaction
         return transactionRepository.save(transaction);
     }
+
+    // ==========================================
+    // GET ALL PARKING TRANSACTIONS
+    // ==========================================
 
     public List<ParkingTransaction> getAllTransactions() {
 
@@ -65,79 +91,78 @@ public class ParkingService {
                 .findTransactionsWithVehicleAndSlot();
     }
 
+    // ==========================================
+    // EXIT VEHICLE
+    // ==========================================
+
     public ParkingTransaction exitVehicle(Long transactionId) {
 
+        // Find transaction
         ParkingTransaction transaction =
                 transactionRepository
                         .findById(transactionId)
                         .orElseThrow(() ->
                                 new RuntimeException(
                                         "Transaction not found with ID: "
-                                                + transactionId));
+                                                + transactionId
+                                ));
 
+        // Prevent exiting twice
         if (transaction.getExitTime() != null) {
-
             throw new RuntimeException(
-                    "Vehicle has already exited");
+                    "Vehicle has already exited"
+            );
         }
 
-        LocalDateTime exitTime = LocalDateTime.now();
+        // Set exit time
+        LocalDateTime exitTime =
+                LocalDateTime.now();
 
         transaction.setExitTime(exitTime);
 
-        double fee = calculateParkingFee(
-                transaction.getEntryTime(),
-                exitTime
-        );
+        // Get entry time
+        LocalDateTime entryTime =
+                transaction.getEntryTime();
+
+        // Calculate parking duration
+        long minutes =
+                Duration.between(
+                        entryTime,
+                        exitTime
+                ).toMinutes();
+
+        // Minimum 1 hour
+        long hours =
+                Math.max(
+                        1,
+                        (minutes + 59) / 60
+                );
+
+        // Parking fee = ₹50 per hour
+        double fee =
+                hours * 50.0;
 
         transaction.setFee(fee);
 
-        Slot slot = transaction.getSlot();
+        // Make slot available again
+        Slot slot =
+                transaction.getSlot();
 
-        if (slot != null) {
+        slot.setAvailable(true);
 
-            slot.setAvailable(true);
+        slotRepository.save(slot);
 
-            slotRepository.save(slot);
-        }
-
+        // Save transaction
         return transactionRepository.save(transaction);
     }
 
-    public double calculateParkingFee(
-            LocalDateTime entryTime,
-            LocalDateTime exitTime) {
+    // ==========================================
+    // TOTAL REVENUE
+    // ==========================================
 
-        long minutes = Duration
-                .between(entryTime, exitTime)
-                .toMinutes();
+    public Double getTotalRevenue() {
 
-        long hours =
-                (long) Math.ceil(minutes / 60.0);
-
-        if (hours <= 0) {
-            hours = 1;
-        }
-
-        double ratePerHour = 50.0;
-
-        return hours * ratePerHour;
-    }
-
-    public double getTotalRevenue() {
-
-        List<ParkingTransaction> transactions =
-                transactionRepository.findAll();
-
-        double total = 0.0;
-
-        for (ParkingTransaction transaction : transactions) {
-
-            if (transaction.getFee() != null) {
-                total += transaction.getFee();
-            }
-        }
-
-        return total;
+        return transactionRepository
+                .getTotalRevenue();
     }
 }

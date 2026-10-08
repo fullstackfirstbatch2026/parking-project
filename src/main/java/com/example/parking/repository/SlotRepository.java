@@ -7,5 +7,7 @@ import java.util.Optional;
 
 public interface SlotRepository extends JpaRepository<Slot, Long> {
 
-    Optional<Slot> findFirstByAvailableTrue();
+    Optional<Slot> findFirstByAvailableTrueAndSlotTypeIgnoreCase(
+            String slotType
+    );
 }
